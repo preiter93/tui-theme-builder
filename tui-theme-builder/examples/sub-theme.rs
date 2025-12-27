@@ -1,4 +1,4 @@
-use ratatui::style::{Color, Style, Stylize};
+use ratatui::style::{Color, Style};
 use serde::Deserialize;
 use tui_theme_builder::ThemeBuilder;
 

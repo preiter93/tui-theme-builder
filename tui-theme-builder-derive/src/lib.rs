@@ -258,7 +258,7 @@ fn process_style_attribute(attr: &Attribute) -> StyleValues {
                     background = Some(ident);
                 }
                 _ => {}
-            };
+            }
         }
 
         Ok(())

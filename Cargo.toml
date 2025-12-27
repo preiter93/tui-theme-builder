@@ -18,6 +18,6 @@ authors = ["preiter <phil.reiter93@gmail.com>"]
 keywords = ["theme", "parser", "ratatui", "tui"]
 
 [workspace.dependencies]
-tui-theme-builder = { path = "tui-theme-builder", version = "0.1.0" }
-tui-theme-builder-derive = { path = "tui-theme-builder-derive", version = "0.1.0" }
-tui-theme-builder-internal = { path = "tui-theme-builder-internal", version = "0.1.0" }
+tui-theme-builder = { path = "tui-theme-builder", version = "0.2.0" }
+tui-theme-builder-derive = { path = "tui-theme-builder-derive", version = "0.2.0" }
+tui-theme-builder-internal = { path = "tui-theme-builder-internal", version = "0.2.0" }
