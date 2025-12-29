@@ -11,4 +11,3 @@ license = "MIT"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 csscolorparser = { version = "0.7.0", features = ["serde"] }
-ratatui = { version = "0.30.0" }
