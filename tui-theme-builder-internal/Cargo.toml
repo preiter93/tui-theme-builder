@@ -1,6 +1,6 @@
 [package]
 name = "tui-theme-builder-internal"
-version = "0.2.0"
+version = "0.2.1"
 description = "tui-theme-builder internals"
 repository.workspace = true
 edition.workspace = true
