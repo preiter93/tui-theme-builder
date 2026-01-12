@@ -8,7 +8,7 @@ use syn::{parse::ParseStream, parse_macro_input, Attribute, Data, DeriveInput, F
 /// - Panics if derive is not attached to a struct
 /// - Panics if no `context` attribute is found
 #[allow(clippy::too_many_lines)]
-#[proc_macro_derive(ThemeBuilder, attributes(context, builder, style))]
+#[proc_macro_derive(ThemeBuilder, attributes(context, builder, style, border_type))]
 pub fn derive_theme_builder(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
@@ -112,6 +112,41 @@ pub fn derive_theme_builder(input: TokenStream) -> TokenStream {
                 field_constructor.extend(quote! {
                     .add_modifier(ratatui::style::Modifier::CROSSED_OUT)
                 });
+            }
+
+            field_constructors.push(field_constructor);
+            continue;
+        }
+
+        // Handle `border_type` tagged fields.
+        let attr = extract_border_type_attribute(&field.attrs);
+        if let Some(attr) = attr {
+            let border_type_value = process_border_type_attribute(attr);
+            let Some(border_type_value) = border_type_value else {
+                panic!("missing value in `border_type` on field `{:?}`", field_name);
+            };
+
+            match border_type_value {
+                BorderTypeAttribute::Variant(variant) => {
+                    let variant_str = variant.to_string();
+                    let variant_ident = match variant_str.as_str() {
+                        "Plain" | "plain" => quote! { Plain },
+                        "Rounded" | "rounded" => quote! { Rounded },
+                        "Double" | "double" => quote! { Double },
+                        "Thick" | "thick" => quote! { Thick },
+                        "QuadrantInside" | "quadrant_inside" => quote! { QuadrantInside },
+                        "QuadrantOutside" | "quadrant_outside" => quote! { QuadrantOutside },
+                        _ => panic!("unknown BorderType variant: {}", variant_str),
+                    };
+                    field_constructor.extend(quote! {
+                        #field_name: ratatui::widgets::BorderType::#variant_ident
+                    });
+                }
+                BorderTypeAttribute::Value(value) => {
+                    field_constructor.extend(quote! {
+                        #field_name: context.#value.clone()
+                    });
+                }
             }
 
             field_constructors.push(field_constructor);
@@ -291,6 +326,43 @@ struct StyleValues {
     reversed: Option<bool>,
     hidden: Option<bool>,
     crossed_out: Option<bool>,
+}
+
+/// A helper method to extract the `border_type` attribute in a list of attributes.
+fn extract_border_type_attribute(attrs: &[Attribute]) -> Option<&Attribute> {
+    attrs
+        .iter()
+        .find(|attr| attr.path().is_ident("border_type"))
+}
+
+/// A helper method that processes a field with border_type annotation.
+fn process_border_type_attribute(attr: &Attribute) -> Option<BorderTypeAttribute> {
+    let mut attribute: Option<BorderTypeAttribute> = None;
+
+    let _ = attr.parse_nested_meta(|meta| {
+        if meta.path.is_ident("value") {
+            // Handle #[border_type(value = context.field)]
+            let value = meta.value()?;
+            let value = extract_metadata_stream(value)?;
+            attribute = Some(BorderTypeAttribute::Value(value));
+            Ok(())
+        } else if let Some(ident) = meta.path.get_ident() {
+            // Handle #[border_type(Rounded)] or #[border_type(Plain)]
+            attribute = Some(BorderTypeAttribute::Variant(ident.clone()));
+            Ok(())
+        } else {
+            Err(meta.error("unsupported border_type attribute"))
+        }
+    });
+
+    attribute
+}
+
+enum BorderTypeAttribute {
+    /// A direct variant like `Rounded`, `Plain`, etc.
+    Variant(Ident),
+    /// A reference to a context field like `theme.border_type`
+    Value(TokenStream2),
 }
 
 /// A helper method that parses a `ParseStream` to a `TokenStream`. It is necessary

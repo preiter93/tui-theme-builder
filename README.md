@@ -11,37 +11,47 @@ A theme builder macro for [ratatui](https://github.com/ratatui/ratatui) apps.
 
 ```rust
 use ratatui::style::{Color, Style};
+use ratatui::widgets::BorderType;
 use serde::Deserialize;
 use tui_theme_builder::ThemeBuilder;
 
 #[derive(Debug, Deserialize)]
-pub struct Colors {
+pub struct Config {
     pub orange: Color,
     pub purple: Color,
+    pub border_type: BorderType,
 }
 
 #[derive(ThemeBuilder)]
-#[builder(context=Colors)]
+#[builder(context=Config)]
 pub struct Theme {
     /// Annotate styles with 'fg=color', 'bg=color' or add modifiers,
     /// e.g. 'bold' or 'underlined'.
     #[style(fg=orange, bg=purple, bold, underlined)]
     pub base: Style,
+
+    /// Annotate border types with 'value=field' to reference a context field,
+    /// or use a variant name directly, e.g. 'plain', 'rounded', 'thick', etc.
+    /// Note: If accessed with 'value=field' the 'field' must start with a
+    /// capital letter.
+    #[border_type(value = border_type)]
+    pub border: BorderType,
 }
 
-impl Default for Colors {
+impl Default for Config {
     fn default() -> Self {
         let s = r##"
         "orange" = "#ffb86c"
         "purple" = "#bd93f9"
+        "border_type" = "Rounded"
         "##;
         toml::from_str(s).unwrap()
     }
 }
 
 fn main() {
-    let colors = Colors::default();
-    let theme = Theme::build(&colors);
+    let config = Config::default();
+    let theme = Theme::build(&config);
 }
 ```
 

@@ -1,6 +1,6 @@
 [package]
 name = "tui-theme-builder-derive"
-version = "0.2.1"
+version = "0.2.2"
 description = "tui-theme-builder proc-macros"
 repository.workspace = true
 edition.workspace = true

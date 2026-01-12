@@ -1,4 +1,7 @@
-use ratatui::style::{Color, Style};
+use ratatui::{
+    style::{Color, Style},
+    widgets::BorderType,
+};
 use serde::Deserialize;
 use tui_theme_builder::ThemeBuilder;
 
@@ -14,6 +17,12 @@ pub struct Theme {
     /// e.g. 'bold' or 'underlined'.
     #[style(fg=primary, bg=primary, bold, underlined)]
     pub base: Style,
+    /// Annotate border types with 'value=field' to reference a context field,
+    /// or use a variant name directly, e.g. 'plain', 'rounded', 'thick', etc.
+    /// Note: If accessed with 'value=field' the 'field' must start with a
+    /// capital letter.
+    #[border_type(thick)]
+    pub border: BorderType,
 }
 
 impl Default for Colors {

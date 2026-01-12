@@ -1,12 +1,12 @@
 [package]
 name = "tui-theme-builder"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 authors = ["preiter <phil.reiter93@gmail.com>"]
 description = "Theme deserializer for Ratatui"
 keywords = ["theme", "deserialize", "parse", "ratatui", "tui"]
 repository = "https://github.com/preiter93/tui-theme-builder"
-readme = "README.md"
+readme = "../README.md"
 license = "MIT"
 
 [dependencies]
